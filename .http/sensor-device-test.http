@@ -1,0 +1,13 @@
+### POST create a sensor
+POST {{baseUrl}}/api/sensors
+Content-Type: application/json
+
+{
+   "name": "Sensor DF55",
+   "ip": "127.0.0.1",
+   "location": "Marcus Street 2066",
+   "protocol": "HTTP",
+   "model": "S55-HTTP"
+}
+
+###
