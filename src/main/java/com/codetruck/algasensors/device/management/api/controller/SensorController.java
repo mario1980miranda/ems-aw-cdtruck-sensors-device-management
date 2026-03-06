@@ -1,13 +1,13 @@
 package com.codetruck.algasensors.device.management.api.controller;
 
 import com.codetruck.algasensors.device.management.api.model.SensorInput;
+import com.codetruck.algasensors.device.management.api.model.SensorOutput;
 import com.codetruck.algasensors.device.management.common.IdGenerator;
 import com.codetruck.algasensors.device.management.domain.model.Sensor;
 import com.codetruck.algasensors.device.management.domain.model.SensorId;
 import com.codetruck.algasensors.device.management.domain.repository.SensorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +19,7 @@ public class SensorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Sensor create(@RequestBody SensorInput input) {
+    public SensorOutput create(@RequestBody SensorInput input) {
         Sensor sensor = Sensor.builder()
                 .id(new SensorId(IdGenerator.generateTSID()))
                 .name(input.getName())
@@ -29,6 +29,15 @@ public class SensorController {
                 .model(input.getModel())
                 .enabled(Boolean.FALSE)
                 .build();
-        return sensorRepository.saveAndFlush(sensor);
+        sensor = sensorRepository.saveAndFlush(sensor);
+        return SensorOutput.builder()
+                .id(sensor.getId().getValue())
+                .name(sensor.getName())
+                .ip(sensor.getIp())
+                .location(sensor.getLocation())
+                .protocol(sensor.getProtocol())
+                .model(sensor.getModel())
+                .enabled(sensor.getEnabled())
+                .build();
     }
 }
