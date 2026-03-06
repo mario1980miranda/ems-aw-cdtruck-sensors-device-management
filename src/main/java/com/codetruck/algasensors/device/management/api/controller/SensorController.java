@@ -77,6 +77,48 @@ public class SensorController {
         sensorRepository.deleteById(sensorFound.getId());
     }
 
+    @PutMapping("{sensorId}/enable")
+    @ResponseStatus(HttpStatus.OK)
+    public SensorOutput enableSensor(@PathVariable TSID sensorId) {
+        final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (Boolean.TRUE.equals(sensorFound.getEnabled())) {
+            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED);
+        }
+        Sensor sensor = Sensor.builder()
+                .id(sensorFound.getId())
+                .name(sensorFound.getName())
+                .ip(sensorFound.getIp())
+                .location(sensorFound.getLocation())
+                .protocol(sensorFound.getProtocol())
+                .model(sensorFound.getModel())
+                .enabled(Boolean.TRUE)
+                .build();
+        sensor = sensorRepository.saveAndFlush(sensor);
+        return convertToModel(sensor);
+    }
+
+    @DeleteMapping("{sensorId}/disable")
+    @ResponseStatus(HttpStatus.OK)
+    public SensorOutput disableSensor(@PathVariable TSID sensorId) {
+        final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (Boolean.FALSE.equals(sensorFound.getEnabled())) {
+            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED);
+        }
+        Sensor sensor = Sensor.builder()
+                .id(sensorFound.getId())
+                .name(sensorFound.getName())
+                .ip(sensorFound.getIp())
+                .location(sensorFound.getLocation())
+                .protocol(sensorFound.getProtocol())
+                .model(sensorFound.getModel())
+                .enabled(Boolean.FALSE)
+                .build();
+        sensor = sensorRepository.saveAndFlush(sensor);
+        return convertToModel(sensor);
+    }
+
     private SensorOutput convertToModel(Sensor sensor) {
         return SensorOutput.builder()
                 .id(sensor.getId().getValue())
