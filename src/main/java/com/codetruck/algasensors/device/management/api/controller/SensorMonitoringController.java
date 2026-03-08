@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/sensors")
 @RequiredArgsConstructor
-public class SensorController {
+public class SensorMonitoringController {
 
     private final SensorRepository sensorRepository;
     private final SensorMonitoringClient sensorMonitoringClient;
@@ -85,7 +85,7 @@ public class SensorController {
         final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (Boolean.TRUE.equals(sensorFound.getEnabled())) {
-            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
         Sensor sensor = Sensor.builder()
                 .id(sensorFound.getId())
@@ -109,7 +109,7 @@ public class SensorController {
         final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (Boolean.FALSE.equals(sensorFound.getEnabled())) {
-            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
         Sensor sensor = Sensor.builder()
                 .id(sensorFound.getId())
