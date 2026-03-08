@@ -1,5 +1,6 @@
 package com.codetruck.algasensors.device.management.api.controller;
 
+import com.codetruck.algasensors.device.management.api.client.SensorMonitoringClient;
 import com.codetruck.algasensors.device.management.api.model.SensorInput;
 import com.codetruck.algasensors.device.management.api.model.SensorOutput;
 import com.codetruck.algasensors.device.management.common.IdGenerator;
@@ -21,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+    private final SensorMonitoringClient sensorMonitoringClient;
 
     @GetMapping
     public Page<SensorOutput> search(@PageableDefault Pageable pageable) {
@@ -95,6 +97,9 @@ public class SensorController {
                 .enabled(Boolean.TRUE)
                 .build();
         sensor = sensorRepository.saveAndFlush(sensor);
+
+        sensorMonitoringClient.enableMonitoring(sensorId);
+
         return convertToModel(sensor);
     }
 
@@ -116,6 +121,9 @@ public class SensorController {
                 .enabled(Boolean.FALSE)
                 .build();
         sensor = sensorRepository.saveAndFlush(sensor);
+
+        sensorMonitoringClient.disableMonitoring(sensorId);
+
         return convertToModel(sensor);
     }
 
