@@ -1,7 +1,9 @@
 package com.codetruck.algasensors.device.management.api.controller;
 
 import com.codetruck.algasensors.device.management.api.client.SensorMonitoringClient;
+import com.codetruck.algasensors.device.management.api.model.SensorDetailOutput;
 import com.codetruck.algasensors.device.management.api.model.SensorInput;
+import com.codetruck.algasensors.device.management.api.model.SensorMonitoringOutput;
 import com.codetruck.algasensors.device.management.api.model.SensorOutput;
 import com.codetruck.algasensors.device.management.common.IdGenerator;
 import com.codetruck.algasensors.device.management.domain.model.Sensor;
@@ -19,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/sensors")
 @RequiredArgsConstructor
-public class SensorMonitoringController {
+public class SensorController {
 
     private final SensorRepository sensorRepository;
     private final SensorMonitoringClient sensorMonitoringClient;
@@ -35,6 +37,20 @@ public class SensorMonitoringController {
         Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return convertToModel(sensor);
+    }
+
+    @GetMapping("{sensorId}/detail")
+    public SensorDetailOutput getOneWithDetail(@PathVariable TSID sensorId) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        SensorMonitoringOutput monitoringOutput = sensorMonitoringClient.getDetail(sensorId);
+
+        SensorOutput sensorOutput = convertToModel(sensor);
+
+        return SensorDetailOutput.builder()
+                .monitoring(monitoringOutput)
+                .sensor(sensorOutput)
+                .build();
     }
 
     @PostMapping
