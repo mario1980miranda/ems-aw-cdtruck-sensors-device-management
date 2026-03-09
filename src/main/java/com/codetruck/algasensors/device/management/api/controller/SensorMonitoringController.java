@@ -81,50 +81,29 @@ public class SensorMonitoringController {
 
     @PutMapping("{sensorId}/enable")
     @ResponseStatus(HttpStatus.OK)
-    public SensorOutput enableSensor(@PathVariable TSID sensorId) {
-        final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
+    public void enableSensor(@PathVariable TSID sensorId) {
+        final Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (Boolean.TRUE.equals(sensorFound.getEnabled())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        Sensor sensor = Sensor.builder()
-                .id(sensorFound.getId())
-                .name(sensorFound.getName())
-                .ip(sensorFound.getIp())
-                .location(sensorFound.getLocation())
-                .protocol(sensorFound.getProtocol())
-                .model(sensorFound.getModel())
-                .enabled(Boolean.TRUE)
-                .build();
-        sensor = sensorRepository.saveAndFlush(sensor);
+
+        sensor.setEnabled(Boolean.TRUE);
+
+        sensorRepository.save(sensor);
 
         sensorMonitoringClient.enableMonitoring(sensorId);
-
-        return convertToModel(sensor);
     }
 
     @DeleteMapping("{sensorId}/disable")
     @ResponseStatus(HttpStatus.OK)
-    public SensorOutput disableSensor(@PathVariable TSID sensorId) {
-        final Sensor sensorFound = sensorRepository.findById(new SensorId(sensorId))
+    public void disableSensor(@PathVariable TSID sensorId) {
+        final Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (Boolean.FALSE.equals(sensorFound.getEnabled())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        Sensor sensor = Sensor.builder()
-                .id(sensorFound.getId())
-                .name(sensorFound.getName())
-                .ip(sensorFound.getIp())
-                .location(sensorFound.getLocation())
-                .protocol(sensorFound.getProtocol())
-                .model(sensorFound.getModel())
-                .enabled(Boolean.FALSE)
-                .build();
-        sensor = sensorRepository.saveAndFlush(sensor);
+
+        sensor.setEnabled(Boolean.FALSE);
+
+        sensorRepository.save(sensor);
 
         sensorMonitoringClient.disableMonitoring(sensorId);
 
-        return convertToModel(sensor);
     }
 
     private SensorOutput convertToModel(Sensor sensor) {
