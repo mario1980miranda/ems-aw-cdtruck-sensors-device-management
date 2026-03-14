@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="device-management" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.codetruck.algasensors.device.management.DeviceManagementApplication" />
+    <module name="device-management.main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
